@@ -328,6 +328,8 @@
             # runtime. The FHS bubblewrap configures ld.so.conf already.
             unset LD_LIBRARY_PATH
 
+            unset TMPDIR
+
             # gcc-wrapper bakes its own dynamic-loader path into produced
             # binaries, bypassing the FHS ld.so.conf. Point it at the FHS
             # loader so executables built inside the shell load
