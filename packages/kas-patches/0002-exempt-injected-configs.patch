@@ -1,0 +1,17 @@
+--- a/kas/includehandler.py
++++ b/kas/includehandler.py
+@@ -208,9 +208,13 @@
+         """
+         Ensure that all concatenated config files belong to the same repository
+         """
++        injected = {os.path.abspath(f)
++                    for f in (os.environ.get('KAS_NIXVARS_CONFIG') or '').split(':')
++                    if f}
+         repo_paths = [Repo.get_root_path(os.path.dirname(configfile),
+                                          fallback=False)
+-                      for configfile in self.top_files]
++                      for configfile in self.top_files
++                      if configfile not in injected]
+ 
+         if len(set(repo_paths)) > 1:
+             raise IncludeException('All concatenated config files must '

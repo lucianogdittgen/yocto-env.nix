@@ -1,0 +1,14 @@
+--- a/kas/config.py
++++ b/kas/config.py
+@@ -53,6 +53,11 @@
+         self.filenames = [os.path.abspath(configfile)
+                           for configfile in filename.split(':')]
+ 
++        _nixvars = os.environ.get('KAS_NIXVARS_CONFIG')
++        if _nixvars:
++            self.filenames += [os.path.abspath(f)
++                               for f in _nixvars.split(':') if f]
++
+         update = ctx.args.update if hasattr(ctx.args, 'update') else False
+         if update:
+             ctx.unpinned_repo_warnings = False

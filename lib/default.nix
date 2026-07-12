@@ -7,12 +7,14 @@
     let
       inherit (pkgs) lib;
 
+      selfPkgs = flake.packages.${pkgs.stdenv.hostPlatform.system};
+
       # Extra tools layered on top of the base host toolchain.
       extraTools = [
-        flake.packages.${pkgs.stdenv.hostPlatform.system}.bitbake-setup
+        selfPkgs.bitbake-setup
         pkgs.google-cloud-sdk
-        pkgs.kas
-        flake.packages.${pkgs.stdenv.hostPlatform.system}.oelint-adv
+        selfPkgs.kas
+        selfPkgs.oelint-adv
       ];
 
       # python3 plus the modules the Yocto build host requires
@@ -309,6 +311,16 @@
 
               BB_BASEHASH_IGNORE_VARS += "${passthroughList}"
             '';
+
+            # :append (not += like nixconf): local.conf is parsed before
+            # bitbake.conf sets the BB_BASEHASH_IGNORE_VARS default.
+            kasFragment = (pkgs.formats.yaml { }).generate "yocto-env-nixvars.yml" {
+              header.version = 1;
+              env = setVars // lib.genAttrs exportVars (_: null);
+              local_conf_header.nixvars = lib.concatStringsSep "\n" (
+                exports ++ [ ''BB_BASEHASH_IGNORE_VARS:append = " ${passthroughList}"'' ]
+              );
+            };
           in
           ''
             # Clear any inherited LD_LIBRARY_PATH so it doesn't override
@@ -326,6 +338,8 @@
 
             # `--postread` equivalent for bitbake.
             export BBPOSTCONF="${nixconf}"
+
+            export KAS_NIXVARS_CONFIG="${kasFragment}"
           '';
         runScript = ''
           ${zshBin}/bin/zsh
