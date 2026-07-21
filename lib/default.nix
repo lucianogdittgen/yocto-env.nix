@@ -140,31 +140,92 @@
 
           source ${pkgs.grml-zsh-config}/etc/zsh/zshrc
 
-          # Current grml zshrc ignores `$PROMPT` assignments — use zstyle:
-          # https://unix.stackexchange.com/questions/656152/why-does-setting-prompt-have-no-effect-in-grmls-zshrc
-
-          # Disable the right-side sad-smiley for non-zero exit codes —
-          # it makes copy-pasting terminal output painful.
-          # https://bts.grml.org/grml/issue2267
-          zstyle ':prompt:grml:right:setup' items
-
-          # http://bewatermyfriend.org/p/2013/003/
-          nix_shell_prompt() {
-              REPLY=''${IN_NIX_SHELL+"(yocto-env) "}
-          }
-          grml_theme_add_token nix-shell-indicator -f nix_shell_prompt '%F{magenta}' '%f'
-
-          zstyle ':prompt:grml:left:setup' items rc change-root user at host path vcs \
-                                           nix-shell-indicator percent
-
-
-
           alias l='${pkgs.eza}/bin/eza -l'
           alias ls='${pkgs.eza}/bin/eza'
 
           export LESSOPEN="|${pkgs.lesspipe}/bin/lesspipe.sh %s"
           source ${pkgs.fzf}/share/fzf/completion.zsh
           source ${pkgs.fzf}/share/fzf/key-bindings.zsh
+
+          # Keep grml's completion and history setup, but let Powerlevel10k own
+          # the prompt. The violet/cyan palette and permanent badge make this
+          # shell visibly different from the user's regular login shell.
+          prompt_my_yocto_env() {
+            p10k segment -b 61 -f 231 -i '⚙' -t 'YOCTO ENV'
+          }
+
+          typeset -g POWERLEVEL9K_MODE=nerdfont-complete
+          typeset -g POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true
+          typeset -g POWERLEVEL9K_PROMPT_ADD_NEWLINE=true
+          typeset -g POWERLEVEL9K_MULTILINE_FIRST_PROMPT_PREFIX='%F{61}╭─%f'
+          typeset -g POWERLEVEL9K_MULTILINE_LAST_PROMPT_PREFIX='%F{39}╰─%f'
+          typeset -g POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(
+            my_yocto_env
+            dir
+            vcs
+            newline
+            prompt_char
+          )
+          typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
+            status
+            command_execution_time
+            background_jobs
+            time
+            newline
+          )
+
+          typeset -g POWERLEVEL9K_LEFT_SEGMENT_SEPARATOR=''
+          typeset -g POWERLEVEL9K_RIGHT_SEGMENT_SEPARATOR=''
+          typeset -g POWERLEVEL9K_LEFT_SUBSEGMENT_SEPARATOR=''
+          typeset -g POWERLEVEL9K_RIGHT_SUBSEGMENT_SEPARATOR=''
+
+          typeset -g POWERLEVEL9K_DIR_BACKGROUND=31
+          typeset -g POWERLEVEL9K_DIR_FOREGROUND=231
+          typeset -g POWERLEVEL9K_SHORTEN_STRATEGY=truncate_to_unique
+          typeset -g POWERLEVEL9K_DIR_TRUNCATE_BEFORE_MARKER=false
+          typeset -g POWERLEVEL9K_DIR_MAX_LENGTH=48
+
+          typeset -g POWERLEVEL9K_VCS_BACKGROUND=25
+          typeset -g POWERLEVEL9K_VCS_FOREGROUND=231
+          typeset -g POWERLEVEL9K_VCS_CLEAN_BACKGROUND=29
+          typeset -g POWERLEVEL9K_VCS_CLEAN_FOREGROUND=231
+          typeset -g POWERLEVEL9K_VCS_MODIFIED_BACKGROUND=136
+          typeset -g POWERLEVEL9K_VCS_MODIFIED_FOREGROUND=231
+          typeset -g POWERLEVEL9K_VCS_UNTRACKED_BACKGROUND=166
+          typeset -g POWERLEVEL9K_VCS_UNTRACKED_FOREGROUND=231
+
+          typeset -g POWERLEVEL9K_PROMPT_CHAR_OK_VIINS_FOREGROUND=39
+          typeset -g POWERLEVEL9K_PROMPT_CHAR_ERROR_VIINS_FOREGROUND=197
+          typeset -g POWERLEVEL9K_PROMPT_CHAR_OK_VIINS_CONTENT_EXPANSION='❯'
+          typeset -g POWERLEVEL9K_PROMPT_CHAR_ERROR_VIINS_CONTENT_EXPANSION='❯'
+          typeset -g POWERLEVEL9K_STATUS_OK=false
+          typeset -g POWERLEVEL9K_STATUS_ERROR_FOREGROUND=197
+          typeset -g POWERLEVEL9K_STATUS_ERROR_BACKGROUND=235
+          typeset -g POWERLEVEL9K_COMMAND_EXECUTION_TIME_THRESHOLD=3
+          typeset -g POWERLEVEL9K_COMMAND_EXECUTION_TIME_FOREGROUND=220
+          typeset -g POWERLEVEL9K_COMMAND_EXECUTION_TIME_BACKGROUND=235
+          typeset -g POWERLEVEL9K_BACKGROUND_JOBS_FOREGROUND=81
+          typeset -g POWERLEVEL9K_BACKGROUND_JOBS_BACKGROUND=235
+          typeset -g POWERLEVEL9K_TIME_FORMAT='%D{%H:%M}'
+          typeset -g POWERLEVEL9K_TIME_FOREGROUND=245
+          typeset -g POWERLEVEL9K_TIME_BACKGROUND=235
+
+          source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
+
+          # Autosuggestions need to be loaded after widgets are defined. Syntax
+          # highlighting must remain last so it can wrap all existing widgets.
+          ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=244'
+          source ${pkgs.zsh-autosuggestions}/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+          ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern cursor)
+          ZSH_HIGHLIGHT_STYLES[command]='fg=39,bold'
+          ZSH_HIGHLIGHT_STYLES[builtin]='fg=81'
+          ZSH_HIGHLIGHT_STYLES[alias]='fg=81'
+          ZSH_HIGHLIGHT_STYLES[path]='fg=117,underline'
+          ZSH_HIGHLIGHT_STYLES[single-quoted-argument]='fg=149'
+          ZSH_HIGHLIGHT_STYLES[double-quoted-argument]='fg=149'
+          ZSH_HIGHLIGHT_PATTERNS=('rm -rf *' 'fg=196,bold')
+          source ${pkgs.zsh-syntax-highlighting}/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
         '';
         destination = "/.zshrc";
       };

@@ -62,8 +62,13 @@ caching: it exports `BB_ENV_PASSTHROUGH_ADDITIONS` with the
 subprocesses, and sets `BBPOSTCONF` to a generated conf snippet so
 those variables survive `BB_BASEHASH_IGNORE_VARS`.
 
-A configured `zsh` (grml + fzf + eza) is launched as the interactive
-shell, with history persisted to `~/.history-yocto-env`.
+A configured `zsh` is launched as the interactive shell, with grml
+completion/history support, fzf key bindings, eza aliases, command
+autosuggestions, syntax highlighting, and a violet/cyan Powerlevel10k prompt.
+Its permanent `YOCTO ENV` badge makes the development environment easy to
+distinguish from the regular login shell. History is persisted to
+`~/.history-yocto-env`. Use a Nerd Font in the terminal for the Powerline
+separators and prompt icons.
 
 ## Project setup tools
 
