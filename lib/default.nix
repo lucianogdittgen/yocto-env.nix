@@ -148,67 +148,54 @@
           source ${pkgs.fzf}/share/fzf/key-bindings.zsh
 
           # Keep grml's completion and history setup, but let Powerlevel10k own
-          # the prompt. The violet/cyan palette and permanent badge make this
-          # shell visibly different from the user's regular login shell.
+          # the prompt. This follows the user's compact Powerline layout while
+          # giving the dev shell its own Nix/Yocto identity.
           prompt_my_yocto_env() {
-            p10k segment -b 61 -f 231 -i '⚙' -t 'YOCTO ENV'
+            p10k segment -b 60 -f 255 -i '' -t 'YOCTO'
           }
 
           typeset -g POWERLEVEL9K_MODE=nerdfont-complete
+          typeset -g POWERLEVEL9K_ICON_PADDING=none
+          typeset -g POWERLEVEL9K_ICON_BEFORE_CONTENT=true
           typeset -g POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true
-          typeset -g POWERLEVEL9K_PROMPT_ADD_NEWLINE=true
-          typeset -g POWERLEVEL9K_MULTILINE_FIRST_PROMPT_PREFIX='%F{61}╭─%f'
-          typeset -g POWERLEVEL9K_MULTILINE_LAST_PROMPT_PREFIX='%F{39}╰─%f'
+          typeset -g POWERLEVEL9K_PROMPT_ADD_NEWLINE=false
           typeset -g POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(
             my_yocto_env
             dir
             vcs
-            newline
             prompt_char
           )
-          typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
-            status
-            command_execution_time
-            background_jobs
-            time
-            newline
-          )
+          typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=()
 
           typeset -g POWERLEVEL9K_LEFT_SEGMENT_SEPARATOR=''
           typeset -g POWERLEVEL9K_RIGHT_SEGMENT_SEPARATOR=''
           typeset -g POWERLEVEL9K_LEFT_SUBSEGMENT_SEPARATOR=''
           typeset -g POWERLEVEL9K_RIGHT_SUBSEGMENT_SEPARATOR=''
 
-          typeset -g POWERLEVEL9K_DIR_BACKGROUND=31
-          typeset -g POWERLEVEL9K_DIR_FOREGROUND=231
+          typeset -g POWERLEVEL9K_DIR_BACKGROUND=67
+          typeset -g POWERLEVEL9K_DIR_FOREGROUND=255
+          typeset -g POWERLEVEL9K_DIR_VISUAL_IDENTIFIER_EXPANSION=''
+          typeset -g POWERLEVEL9K_DIR_ANCHOR_BOLD=true
           typeset -g POWERLEVEL9K_SHORTEN_STRATEGY=truncate_to_unique
           typeset -g POWERLEVEL9K_DIR_TRUNCATE_BEFORE_MARKER=false
           typeset -g POWERLEVEL9K_DIR_MAX_LENGTH=48
 
-          typeset -g POWERLEVEL9K_VCS_BACKGROUND=25
-          typeset -g POWERLEVEL9K_VCS_FOREGROUND=231
-          typeset -g POWERLEVEL9K_VCS_CLEAN_BACKGROUND=29
-          typeset -g POWERLEVEL9K_VCS_CLEAN_FOREGROUND=231
-          typeset -g POWERLEVEL9K_VCS_MODIFIED_BACKGROUND=136
-          typeset -g POWERLEVEL9K_VCS_MODIFIED_FOREGROUND=231
-          typeset -g POWERLEVEL9K_VCS_UNTRACKED_BACKGROUND=166
-          typeset -g POWERLEVEL9K_VCS_UNTRACKED_FOREGROUND=231
+          typeset -g POWERLEVEL9K_VCS_BRANCH_ICON=' '
+          typeset -g POWERLEVEL9K_VCS_CLEAN_BACKGROUND=107
+          typeset -g POWERLEVEL9K_VCS_CLEAN_FOREGROUND=234
+          typeset -g POWERLEVEL9K_VCS_MODIFIED_BACKGROUND=179
+          typeset -g POWERLEVEL9K_VCS_MODIFIED_FOREGROUND=234
+          typeset -g POWERLEVEL9K_VCS_UNTRACKED_BACKGROUND=173
+          typeset -g POWERLEVEL9K_VCS_UNTRACKED_FOREGROUND=234
 
-          typeset -g POWERLEVEL9K_PROMPT_CHAR_OK_VIINS_FOREGROUND=39
+          typeset -g POWERLEVEL9K_PROMPT_CHAR_BACKGROUND=
+          typeset -g POWERLEVEL9K_PROMPT_CHAR_OK_VIINS_FOREGROUND=81
           typeset -g POWERLEVEL9K_PROMPT_CHAR_ERROR_VIINS_FOREGROUND=197
           typeset -g POWERLEVEL9K_PROMPT_CHAR_OK_VIINS_CONTENT_EXPANSION='❯'
           typeset -g POWERLEVEL9K_PROMPT_CHAR_ERROR_VIINS_CONTENT_EXPANSION='❯'
-          typeset -g POWERLEVEL9K_STATUS_OK=false
-          typeset -g POWERLEVEL9K_STATUS_ERROR_FOREGROUND=197
-          typeset -g POWERLEVEL9K_STATUS_ERROR_BACKGROUND=235
-          typeset -g POWERLEVEL9K_COMMAND_EXECUTION_TIME_THRESHOLD=3
-          typeset -g POWERLEVEL9K_COMMAND_EXECUTION_TIME_FOREGROUND=220
-          typeset -g POWERLEVEL9K_COMMAND_EXECUTION_TIME_BACKGROUND=235
-          typeset -g POWERLEVEL9K_BACKGROUND_JOBS_FOREGROUND=81
-          typeset -g POWERLEVEL9K_BACKGROUND_JOBS_BACKGROUND=235
-          typeset -g POWERLEVEL9K_TIME_FORMAT='%D{%H:%M}'
-          typeset -g POWERLEVEL9K_TIME_FOREGROUND=245
-          typeset -g POWERLEVEL9K_TIME_BACKGROUND=235
+          typeset -g POWERLEVEL9K_PROMPT_CHAR_LEFT_LEFT_WHITESPACE=' '
+          typeset -g POWERLEVEL9K_PROMPT_CHAR_LEFT_RIGHT_WHITESPACE=' '
+          typeset -g POWERLEVEL9K_PROMPT_CHAR_LEFT_PROMPT_LAST_SEGMENT_END_SYMBOL=
 
           source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
 
