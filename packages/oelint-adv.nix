@@ -13,7 +13,7 @@ let
 in
 ps.buildPythonApplication (finalAttrs: {
   pname = "oelint-adv";
-  version = "9.10.1";
+  version = "9.10.3";
   pyproject = true;
 
   src = pkgs.fetchFromGitHub {
