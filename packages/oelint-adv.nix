@@ -20,7 +20,7 @@ ps.buildPythonApplication (finalAttrs: {
     owner = "priv-kweihmann";
     repo = "oelint-adv";
     tag = finalAttrs.version;
-    hash = "sha256-ntF4oGZZGYNAqtRLpY8BjCwQO8I+vdQsEmTphm1baUw=";
+    hash = "sha256-CfgCyo/3c9RGEpp7Ok23+NlTavRdoBNde5DNNRevnMg=";
   };
 
   postPatch = ''
