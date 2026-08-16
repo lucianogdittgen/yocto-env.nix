@@ -67,9 +67,9 @@ shell, with history persisted to `~/.history-yocto-env`.
 
 ## Project setup tools
 
-Both of the project-bootstrap tools used in the Yocto ecosystem are on
-`PATH`, so you can lay out a fresh build directory from inside the shell
-with whichever one your project uses:
+The project-bootstrap tools used in the Yocto ecosystem are on `PATH`, so
+you can lay out a fresh build directory from inside the shell with
+whichever one your project uses:
 
 - **`bitbake-setup`** — the Yocto Project's official bootstrap tool. It
   reads a JSON description of the layers and config snippets to use,
@@ -82,6 +82,9 @@ with whichever one your project uses:
   project description, clones the referenced layers at pinned revisions,
   and drives bitbake: `kas build path/to/project.yml` (or `kas shell` to
   drop into a configured build environment).
+- **`repo`** — Google's multi-repository tool (`git-repo` in nixpkgs, which
+  we co-maintain). Vendor BSPs that ship a manifest use it: `repo init -u
+  <manifest-url> -b <branch>` followed by `repo sync` lays out the tree.
 
 `oelint-adv`, an advanced bitbake-recipe linter, is also on `PATH` for
 checking recipe style and common mistakes: `oelint-adv path/to/recipe.bb`.
