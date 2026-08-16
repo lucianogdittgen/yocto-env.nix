@@ -24,19 +24,35 @@ jobs:
           build-hosts: false
           build-devshells: false
       - name: Update oelint-parser and oelint-adv
+        id: update
         run: |
-          nix run nixpkgs#nix-update -- --flake --version=stable oelint-parser
-          nix run nixpkgs#nix-update -- --flake --version=stable oelint-adv
-      - name: Format
-        run: nix fmt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          base=$(git rev-parse HEAD)
+
+          # `--commit` writes one commit per package, with the nixpkgs-standard
+          # `attr: old -> new` subject. It is a no-op when the package is current.
+          for attr in oelint-parser oelint-adv; do
+            nix run nixpkgs#nix-update -- --flake --version=stable --commit "$attr"
+          done
+
+          if [ "$(git rev-parse HEAD)" != "$base" ]; then
+            nix fmt
+            git diff --quiet || git commit --all --amend --no-edit
+          fi
+
+          subjects=$(git log --reverse --format=%s "$base..HEAD")
+          title=${subjects//$'\n'/, }
+          echo "title=${title:-oelint: update oelint-adv and oelint-parser}" >>"$GITHUB_OUTPUT"
       - name: Open pull request
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ steps.nix.outputs.token }}
           branch: update/oelint
           delete-branch: true
-          title: "oelint: update oelint-adv and oelint-parser"
-          commit-message: "oelint: update oelint-adv and oelint-parser"
+          title: ${{ steps.update.outputs.title }}
+          commit-message: ${{ steps.update.outputs.title }}
           body: |
             Automated daily bump of the in-tree `oelint-adv` and `oelint-parser`
             packages to their latest upstream releases.
