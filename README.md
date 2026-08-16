@@ -76,7 +76,7 @@ whichever one your project uses:
   clones them at pinned revisions, and creates a directory ready to
   build. Start with `bitbake-setup list` to see the available
   configurations, then `bitbake-setup init` to instantiate one. This
-  flake packages it from BitBake `yocto-6.0` (2.18.0) — see
+  flake packages it from the upstream PyPI release (2.19.0) — see
   `packages/bitbake-setup.nix`.
 - **`kas`** — the established alternative (from nixpkgs). It reads a YAML
   project description, clones the referenced layers at pinned revisions,
