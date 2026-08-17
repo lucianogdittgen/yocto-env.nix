@@ -1,49 +1,39 @@
-# bitbake-setup imports bb.* from its sibling lib/, so install the whole
-# BitBake tree and expose only that entry point.
 { pkgs, lib }:
 
-pkgs.stdenv.mkDerivation {
+let
+  ps = pkgs.python3Packages;
+in
+ps.buildPythonApplication (finalAttrs: {
   pname = "bitbake-setup";
-  version = "2.18.0";
+  version = "2.19.0";
+  format = "wheel";
 
-  src = pkgs.fetchFromGitHub {
-    owner = "openembedded";
-    repo = "bitbake";
-    rev = "yocto-6.0";
-    hash = "sha256-RyMss2lWM04eFanbZNerlgRE971q7yKxQjPuN02D2IU=";
+  src = ps.fetchPypi {
+    inherit (finalAttrs) version;
+    pname = "bitbake_setup";
+    format = "wheel";
+    dist = "py3";
+    python = "py3";
+    hash = "sha256-tq53r8I02HL4mTgnIxcVf4VTYhRngYgl232/cDgLzdI=";
   };
 
-  nativeBuildInputs = [
-    pkgs.makeWrapper
-    pkgs.python3
+  makeWrapperArgs = [
+    "--prefix PATH : ${
+      lib.makeBinPath [
+        pkgs.git
+        pkgs.diffutils
+      ]
+    }"
   ];
 
-  dontConfigure = true;
-  dontBuild = true;
-
-  installPhase = ''
-    runHook preInstall
-
-    mkdir -p "$out/share/bitbake"
-    cp -r bin lib "$out/share/bitbake/"
-    patchShebangs "$out/share/bitbake/bin"
-
-    makeWrapper "$out/share/bitbake/bin/bitbake-setup" "$out/bin/bitbake-setup" \
-      --prefix PATH : ${
-        lib.makeBinPath [
-          pkgs.git
-          pkgs.diffutils
-        ]
-      }
-
-    runHook postInstall
-  '';
+  pythonImportsCheck = [ "bitbake_setup" ];
 
   meta = {
     description = "Yocto Project BitBake environment bootstrap tool (bitbake-setup)";
     homepage = "https://git.openembedded.org/bitbake/";
+    changelog = "https://pypi.org/project/bitbake-setup/${finalAttrs.version}/";
     license = lib.licenses.gpl2Only;
     mainProgram = "bitbake-setup";
     platforms = lib.platforms.linux;
   };
-}
+})

@@ -10,8 +10,28 @@ permissions:
   contents: write
   pull-requests: write
 jobs:
-  oelint:
+  update:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # oelint-adv pins the in-tree oelint-parser, so the two roll together.
+          - name: oelint
+            attrs: oelint-parser oelint-adv
+            summary: the `oelint-adv` and `oelint-parser` packages
+          # fetchPypi builds a files.pythonhosted.org URL for wheels, which
+          # nix-update cannot map back to a project; name the project directly.
+          - name: bitbake-setup
+            attrs: bitbake-setup
+            extra: --url mirror://pypi/b/bitbake-setup
+            summary: the `bitbake-setup` package
+          # --build fails the job instead of opening a pull request when a new
+          # release breaks the kas-patches.
+          - name: kas
+            attrs: kas
+            extra: --build
+            summary: the `kas` package
     steps:
       - uses: ossystems/nix-actions@v1
         id: nix
@@ -23,20 +43,36 @@ jobs:
           flake-check: false
           build-hosts: false
           build-devshells: false
-      - name: Update oelint-parser and oelint-adv
+      - name: Update ${{ matrix.name }}
+        id: update
         run: |
-          nix run nixpkgs#nix-update -- --flake --version=stable oelint-parser
-          nix run nixpkgs#nix-update -- --flake --version=stable oelint-adv
-      - name: Format
-        run: nix fmt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          base=$(git rev-parse HEAD)
+
+          # `--commit` writes one commit per package, with the nixpkgs-standard
+          # `attr: old -> new` subject. It is a no-op when the package is current.
+          for attr in ${{ matrix.attrs }}; do
+            nix run nixpkgs#nix-update -- --flake --version=stable ${{ matrix.extra }} --commit "$attr"
+          done
+
+          if [ "$(git rev-parse HEAD)" != "$base" ]; then
+            nix fmt
+            git diff --quiet || git commit --all --amend --no-edit
+          fi
+
+          subjects=$(git log --reverse --format=%s "$base..HEAD")
+          title=${subjects//$'\n'/, }
+          echo "title=${title:-${{ matrix.name }}: no update available}" >>"$GITHUB_OUTPUT"
       - name: Open pull request
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ steps.nix.outputs.token }}
-          branch: update/oelint
+          branch: update/${{ matrix.name }}
           delete-branch: true
-          title: "oelint: update oelint-adv and oelint-parser"
-          commit-message: "oelint: update oelint-adv and oelint-parser"
+          title: ${{ steps.update.outputs.title }}
+          commit-message: ${{ steps.update.outputs.title }}
           body: |
-            Automated daily bump of the in-tree `oelint-adv` and `oelint-parser`
-            packages to their latest upstream releases.
+            Automated daily bump of ${{ matrix.summary }} to the latest upstream
+            release.
