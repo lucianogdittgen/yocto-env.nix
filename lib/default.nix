@@ -12,6 +12,7 @@
       # Extra tools layered on top of the base host toolchain.
       extraTools = [
         selfPkgs.bitbake-setup
+        pkgs.gh
         pkgs.gitRepo
         pkgs.google-cloud-sdk
         selfPkgs.kas
