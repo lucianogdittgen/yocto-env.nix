@@ -15,6 +15,7 @@
 
       extraTools = [
         selfPkgs.bitbake-setup
+        pkgs.gh
         pkgs.gitRepo
         pkgs.google-cloud-sdk
         selfPkgs.kas
