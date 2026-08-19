@@ -94,6 +94,12 @@ whichever one your project uses:
 `oelint-adv`, an advanced bitbake-recipe linter, is also on `PATH` for
 checking recipe style and common mistakes: `oelint-adv path/to/recipe.bb`.
 
+`gh`, GitHub's CLI, is on `PATH` as well, for the layer and BSP
+repositories hosted there: `gh repo clone`, `gh pr create`, `gh run
+watch`. It reads its configuration from `~/.config/gh`, and the shell
+keeps the host `$HOME`, so an existing `gh auth login` on the host
+carries over.
+
 ## Repository layout
 
 - `flake.nix` — minimal entry point; uses [phaer/red-tape](https://github.com/phaer/red-tape).
