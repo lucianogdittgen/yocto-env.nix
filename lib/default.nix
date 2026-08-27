@@ -16,6 +16,7 @@
         pkgs.gh
         pkgs.gitRepo
         pkgs.google-cloud-sdk
+        selfPkgs.herdr
         selfPkgs.kas
         selfPkgs.oelint-adv
       ];
