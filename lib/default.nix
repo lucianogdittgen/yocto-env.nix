@@ -225,6 +225,13 @@
         runtimeInputs = [ pkgs.zsh ];
         text = ''
           export SHELL_SESSIONS_DISABLE=1
+          # An opt-in launcher runs after the FHS profile has set up the build
+          # environment. The default remains the configured interactive shell.
+          if [[ -n "''${YOCTO_ENV_RUN:-}" ]]; then
+            yocto_entry="$YOCTO_ENV_RUN"
+            unset YOCTO_ENV_RUN
+            exec "$yocto_entry"
+          fi
           ZDOTDIR=${zshConfig} ${pkgs.zsh}/bin/zsh -o NO_GLOBAL_RCS
         '';
       };

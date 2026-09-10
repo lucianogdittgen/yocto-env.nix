@@ -100,6 +100,25 @@ watch`. It reads its configuration from `~/.config/gh`, and the shell
 keeps the host `$HOME`, so an existing `gh auth login` on the host
 carries over.
 
+### Starting an application inside the FHS environment
+
+Set `YOCTO_ENV_RUN` to an executable path to run it after the FHS profile has
+configured the build environment, instead of opening the interactive zsh.
+The path must be visible inside bubblewrap. The variable is removed before
+the application starts, so child development shells do not repeat the launch.
+Without this variable, the normal interactive shell is unchanged.
+
+Bakepane uses this hook from an existing host tmux/tmuxp pane:
+
+```sh
+bakepane project --env ~/yocto-env.nix
+```
+
+It captures the host terminal viewer before `nix develop` enters the FHS
+environment. Claude and tool workers then run inside FHS, while host tmux
+panes display the tools through a local socket. Bakepane must be installed
+separately on the host; this hook does not add it to the default tool set.
+
 ## Repository layout
 
 - `flake.nix` — minimal entry point; uses [phaer/red-tape](https://github.com/phaer/red-tape).
